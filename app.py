@@ -109,3 +109,9 @@ def index():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+'''
+git add .
+git commit -m "변경내용"
+git push
+'''
