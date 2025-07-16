@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Next match</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* 🔵 흐릿한 배경 이미지 */
+        .background {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("/static/footballclob.jpg");
+            background-size: cover;
+            background-position: center;
+            filter: blur(6px);
+            opacity: 0.6;
+            z-index: -1;
+        }
+
+        .container {
+            position: relative;
+            width: 400px;
+            margin: 150px auto;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            width: 80%;
+            font-size: 16px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #1e90ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #006ad1;
+        }
+
+        .error {
+            color: red;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 흐릿한 배경 이미지 -->
+    <div class="background"></div>
+
+    <div class="container">
+        <h1>⚽ Next match</h1>
+        <form method="post">
+            <input type="text" name="team_name" placeholder="Enter team name (ex: Barcelona)">
+            <br>
+            <button type="submit">Search</button>
+        </form>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>
