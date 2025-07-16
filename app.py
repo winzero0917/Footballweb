@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request
 import requests
 from datetime import datetime, timedelta
+import os
 
 app = Flask(__name__)
 
-API_KEY = "afb71676a1msh9ffc994fbdfa108p11029fjsnc57e61537f3a"
+API_KEY = os.getenv("API_KEY")
 
 def get_team_id(team_name):
     url = "https://api-football-v1.p.rapidapi.com/v3/teams"
