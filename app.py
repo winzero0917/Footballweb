@@ -138,6 +138,8 @@ def index():
                 home_last = get_last_matches(match['home_id'])
                 away_last = get_last_matches(match['away_id'])
                 top_scorer, top_assister = get_top_players(match['league_id'], match['season'], team_id)
+                print("TOP SCORER:", top_scorer)
+                print("TOP ASSISTER:", top_assister)
 
                 return render_template("result.html",
                                        match=match,
