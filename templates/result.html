@@ -80,7 +80,16 @@
         <p>🏟 Stadium: {{ match.venue }}, {{ match.city }}</p>
         <p>🏆 League: {{ match.league }} ({{ match.round }})</p>
 
+        <!-- ✅ Top Scorer & Assister -->
+        {% if top_scorer %}
+            <p>🔥 Top Scorer: <strong>{{ top_scorer.name }}</strong> ({{ top_scorer.goals }} goals)</p>
+        {% endif %}
+        {% if top_assister %}
+            <p>🎯 Top Assister: <strong>{{ top_assister.name }}</strong> ({{ top_assister.assists }} assists)</p>
+        {% endif %}
+
         <a href="/">← Search for other teams</a>
     </div>
+
 </body>
 </html>
