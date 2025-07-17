@@ -49,7 +49,9 @@ def get_next_match(team_id):
     "home_logo": match['teams']['home']['logo'],
     "away_logo": match['teams']['away']['logo'],
     "home_id": match['teams']['home']['id'],     # ✅ 추가
-    "away_id": match['teams']['away']['id']      # ✅ 추가
+    "away_id": match['teams']['away']['id'] ,     # ✅ 추가
+    "league_id": match['league']['id'],      # ✅ 추가
+    "season": match['league']['season']
 }
 
 
@@ -84,6 +86,44 @@ def get_last_matches(team_id):
 
     return results
 
+def get_top_players(league_id, season, team_id):
+    url = "https://api-football-v1.p.rapidapi.com/v3/players/topscorers"
+    querystring = {"league": str(league_id), "season": str(season)}
+    headers = {
+        "X-RapidAPI-Key": API_KEY,
+        "X-RapidAPI-Host": "api-football-v1.p.rapidapi.com"
+    }
+
+    response = requests.get(url, headers=headers, params=querystring)
+    data = response.json()
+
+    top_scorer = None
+    top_assister = None
+    max_goals = 0
+    max_assists = 0
+
+    for player in data['response']:
+        if player['statistics'][0]['team']['id'] != team_id:
+            continue
+
+        stats = player['statistics'][0]
+        goals = stats['goals']['total'] or 0
+        assists = stats['goals']['assists'] or 0
+
+        if goals > max_goals:
+            max_goals = goals
+            top_scorer = {
+                "name": player['player']['name'],
+                "goals": goals
+            }
+        if assists > max_assists:
+            max_assists = assists
+            top_assister = {
+                "name": player['player']['name'],
+                "assists": assists
+            }
+
+    return top_scorer, top_assister
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -93,18 +133,24 @@ def index():
 
         if team_id:
             match = get_next_match(team_id)
+
             if match:
-                home_last = get_last_matches(match['home_id'])   # ✅ 홈팀
-                away_last = get_last_matches(match['away_id'])   # ✅ 원정팀
+                home_last = get_last_matches(match['home_id'])
+                away_last = get_last_matches(match['away_id'])
+                top_scorer, top_assister = get_top_players(match['league_id'], match['season'], team_id)
+
                 return render_template("result.html",
-                                    match=match,
-                                    team_name=team_name,
-                                    home_last=home_last,
-                                    away_last=away_last)
+                                       match=match,
+                                       team_name=team_name,
+                                       home_last=home_last,
+                                       away_last=away_last,
+                                       top_scorer=top_scorer,
+                                       top_assister=top_assister)
 
         return render_template("index.html", error="❌ Team information not found.")
 
     return render_template("index.html")
+
 
 
 if __name__ == "__main__":
@@ -112,6 +158,6 @@ if __name__ == "__main__":
 
 '''
 git add .
-git commit -m "변경내용"
+git commit -m "Title change"
 git push
 '''
