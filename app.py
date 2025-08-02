@@ -2,9 +2,11 @@ from flask import Flask, render_template, request
 import requests
 from datetime import datetime, timedelta
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
-
 API_KEY = os.getenv("API_KEY")
 
 def get_team_id(team_name):
@@ -16,7 +18,7 @@ def get_team_id(team_name):
     }
     response = requests.get(url, headers=headers, params=querystring)
     data = response.json()
-    if data['results'] == 0:
+    if data.get('results', 0) == 0:
         return None
     return data['response'][0]['team']['id']
 
@@ -38,22 +40,21 @@ def get_next_match(team_id):
     kst_time = utc_time + timedelta(hours=9)
 
     return {
-    "date": kst_time.strftime("%Y-%m-%d"),
-    "time": kst_time.strftime("%H:%M"),
-    "venue": match['fixture']['venue']['name'],
-    "city": match['fixture']['venue']['city'],
-    "league": match['league']['name'],
-    "round": match['league']['round'],
-    "home": match['teams']['home']['name'],
-    "away": match['teams']['away']['name'],
-    "home_logo": match['teams']['home']['logo'],
-    "away_logo": match['teams']['away']['logo'],
-    "home_id": match['teams']['home']['id'],     # ✅ 추가
-    "away_id": match['teams']['away']['id'] ,     # ✅ 추가
-    "league_id": match['league']['id'],      # ✅ 추가
-    "season": match['league']['season']
-}
-
+        "date": kst_time.strftime("%Y-%m-%d"),
+        "time": kst_time.strftime("%H:%M"),
+        "venue": match['fixture']['venue']['name'],
+        "city": match['fixture']['venue']['city'],
+        "league": match['league']['name'],
+        "round": match['league']['round'],
+        "home": match['teams']['home']['name'],
+        "away": match['teams']['away']['name'],
+        "home_logo": match['teams']['home']['logo'],
+        "away_logo": match['teams']['away']['logo'],
+        "home_id": match['teams']['home']['id'],
+        "away_id": match['teams']['away']['id'],
+        "league_id": match['league']['id'],
+        "season": match['league']['season']
+    }
 
 def get_last_matches(team_id):
     url = "https://api-football-v1.p.rapidapi.com/v3/fixtures"
@@ -62,7 +63,6 @@ def get_last_matches(team_id):
         "X-RapidAPI-Key": API_KEY,
         "X-RapidAPI-Host": "api-football-v1.p.rapidapi.com"
     }
-
     response = requests.get(url, headers=headers, params=querystring)
     data = response.json()
     results = []
@@ -93,7 +93,6 @@ def get_top_players(league_id, season, team_id):
         "X-RapidAPI-Key": API_KEY,
         "X-RapidAPI-Host": "api-football-v1.p.rapidapi.com"
     }
-
     response = requests.get(url, headers=headers, params=querystring)
     data = response.json()
 
@@ -133,13 +132,10 @@ def index():
 
         if team_id:
             match = get_next_match(team_id)
-
             if match:
                 home_last = get_last_matches(match['home_id'])
                 away_last = get_last_matches(match['away_id'])
                 top_scorer, top_assister = get_top_players(match['league_id'], match['season'], team_id)
-                print("TOP SCORER:", top_scorer)
-                print("TOP ASSISTER:", top_assister)
 
                 return render_template("result.html",
                                        match=match,
@@ -153,13 +149,11 @@ def index():
 
     return render_template("index.html")
 
-
-
 if __name__ == "__main__":
     app.run(debug=True)
 
 '''
 git add .
-git commit -m "add top player"
+git commit -m "return"
 git push
 '''
